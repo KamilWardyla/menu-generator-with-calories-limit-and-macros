@@ -9,7 +9,7 @@ df = pd.DataFrame(data)
 COUNT CARBON AND ADD TO NEW COLUMN
 """
 
-df2 = df.assign(carbon=lambda x: (x.calories - x.protein * 4 - x.fat * 9) / 4)
+df2 = df.assign(carbs=lambda x: (x.calories - x.protein * 4 - x.fat * 9) / 4)
 
 if __name__ == "__main__":
     execute_sql('''
@@ -19,15 +19,15 @@ if __name__ == "__main__":
             calories DOUBLE PRECISION NOT NULL,
             protein DOUBLE PRECISION NOT NULL,
             fat DOUBLE PRECISION NOT NULL,
-            carbon DOUBLE PRECISION NOT NULL
+            carbs DOUBLE PRECISION NOT NULL
         )
         ''')
 
     for row in df2.itertuples():
-        if math.isnan(row.calories) or math.isnan(row.protein) or math.isnan(row.fat) or math.isnan(row.carbon):
+        if math.isnan(row.calories) or math.isnan(row.protein) or math.isnan(row.fat) or math.isnan(row.carbs):
             continue
         else:
             execute_sql('''
-                INSERT INTO recipies(title, calories, protein, fat, carbon)
+                INSERT INTO recipies(title, calories, protein, fat, carbs)
                     VALUES(%s, %s, %s, %s, %s) on conflict (title) do nothing;
-                ''', row.title, row.calories, row.protein, row.fat, row.carbon)
+                ''', row.title, row.calories, row.protein, row.fat, row.carbs)
