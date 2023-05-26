@@ -92,15 +92,16 @@ def generate_day_menu(calories, protein, carbs, fat):
     daily_carbs = 0
     
     
-    prob = LpProblem('Meal', LpMaximize)
+    #Minimalize number of meals
+    prob = LpProblem('Meal', LpMinimize)
     
-    
+    #Create a dictionary named meals, which will contain the referenced variables
     meals = LpVariable.dicts('Meal', meals_dict, lowBound=0, cat=LpBinary)
-    print(meals)
     
-    
+    #The objective funtion
     prob += lpSum([meals_dict[meal] for meal in meals_dict])
     
+    #Constrains
     prob += lpSum([meals_dict[meal]['calories'] * meals[meal] for meal in meals_dict]) == calories
     prob += lpSum([meals_dict[meal]['protein'] * meals[meal] for meal in meals_dict]) >= protein
     prob += lpSum([meals_dict[meal]['fat'] * meals[meal] for meal in meals_dict]) == fat
@@ -113,7 +114,7 @@ def generate_day_menu(calories, protein, carbs, fat):
             menu[meal] = meals_dict[meal]
     
     for key, value in menu.items():
-        daily_meals_list.append(f"{key} \n Calories: {value['calories']}kcal, Protein: {value['protein']}g, Fat: {value['fat']}g, Carbs: {value['carbs']}g \n")
+        daily_meals_list.append(f"{key} \n Calories: {value['calories']} kcal, Protein: {value['protein']}g, Fat: {value['fat']}g, Carbs: {value['carbs']}g \n")
         daily_calories += value['calories']
         daily_protein += value['protein']
         daily_fat += value['fat']
@@ -143,9 +144,16 @@ def generate_days_menu(days, calories, protein, carbs, fat):
     """
     result_string = ""
     for i in range(1, days + 1):
-        daily_menu = generate_day_menu(calories, protein, carbs, fat)
-        result_string += f"Day {i} {daily_menu}" 
+        result_string += f"Day {i} {generate_day_menu(calories, protein, carbs, fat)}" 
     return result_string
 
 if __name__ == "__main__":
-    print(generate_days_menu(3, 2000, 70, 250, 80))
+    """
+    3999
+kcal / day
+Węglowodany 584 g
+Białka 166 g
+Tłuszcze 111 g
+    """
+    print(generate_day_menu(3999, 166, 584, 111))
+    # print(generate_days_menu(3, 2000, 70, 250, 80))

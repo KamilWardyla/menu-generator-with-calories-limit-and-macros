@@ -25,7 +25,7 @@ if __name__ == "__main__":
     for row in df2.itertuples():
         if math.isnan(row.calories) or math.isnan(row.protein) or math.isnan(row.fat) or math.isnan(row.carbs):
             continue
-        elif row.calories in range(0, 400) or row.calories > 1200:
+        elif row.calories in range(0, 400) or row.calories > 1500:
             continue
         else:
             execute_sql('''
