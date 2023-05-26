@@ -6,9 +6,8 @@ data = pd.read_csv("epi_r.csv", usecols=['title', 'calories', 'protein', 'fat'])
 df = pd.DataFrame(data)
 
 """
-COUNT CARBON AND ADD TO NEW COLUMN
+COUNT CARBS AND ADD TO NEW COLUMN
 """
-
 df2 = df.assign(carbs=lambda x: (x.calories - x.protein * 4 - x.fat * 9) / 4)
 
 if __name__ == "__main__":
@@ -25,6 +24,8 @@ if __name__ == "__main__":
 
     for row in df2.itertuples():
         if math.isnan(row.calories) or math.isnan(row.protein) or math.isnan(row.fat) or math.isnan(row.carbs):
+            continue
+        elif row.calories in range(0, 400) or row.calories > 1200:
             continue
         else:
             execute_sql('''
