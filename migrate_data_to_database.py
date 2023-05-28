@@ -1,6 +1,6 @@
 import pandas as pd
 import math
-from main import execute_sql
+from db_utils import execute_sql
 
 data = pd.read_csv("epi_r.csv", usecols=['title', 'calories', 'protein', 'fat'])
 df = pd.DataFrame(data)

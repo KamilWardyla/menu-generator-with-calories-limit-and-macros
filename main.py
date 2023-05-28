@@ -1,41 +1,9 @@
-import os
-from dotenv import load_dotenv
-from psycopg2 import ProgrammingError, connect
 from pulp import *
-
-load_dotenv()
-user = os.environ["DB_USER"]
-host = os.environ["HOST"]
-password = os.environ["PASSWORD"]
-db = os.environ["DB"]
+from db_utils import execute_sql
 
 
 class ValidateError(Exception):
     pass
-
-def execute_sql(sql_code, *args):
-    """
-        Executes SQL code with the provided arguments and returns the results.
-
-        Parameters:
-            sql_code (str): The SQL code to be executed.
-            *args: Variable number of arguments to be passed as parameters to the SQL code.
-
-        Returns:
-            list or str: The results of the SQL query as a list of tuples, or an error message as a string if an exception occurs.
-
-        Raises:
-            ProgrammingError: If an error occurs during the execution of the SQL code.
-
-    """
-    with connect(host=host, user=user, password=password, database=db) as conn:
-        with conn.cursor() as cur:
-            cur.execute(sql_code, args)
-            try:
-                results = cur.fetchall()
-                return results
-            except ProgrammingError as e:
-                return f"Error {e}"
 
 
 def validate_calories_and_macronutrients(calories, protein_grams, carbs_grams, fat_grams):
@@ -50,7 +18,6 @@ def validate_calories_and_macronutrients(calories, protein_grams, carbs_grams, f
 
     Returns:
         bool: True if the calculated calories match the provided total calorie count, otherwise raise ValidateError.
-
     """
     protein_kcal = protein_grams*4
     carbs_kcal = carbs_grams * 4
@@ -149,11 +116,11 @@ def generate_days_menu(days, calories, protein, carbs, fat):
 
 if __name__ == "__main__":
     """
-    3999
-kcal / day
-Węglowodany 584 g
-Białka 166 g
-Tłuszcze 111 g
+        3999
+    kcal / day
+    Węglowodany 584 g
+    Białka 166 g
+    Tłuszcze 111 g
     """
     print(generate_day_menu(3999, 166, 584, 111))
     # print(generate_days_menu(3, 2000, 70, 250, 80))
