@@ -1,6 +1,10 @@
+import argparse
+
 from pulp import *
+
 from db_utils import execute_sql
 
+number_of_meals_at_base = execute_sql("SELECT COUNT(*) FROM recipies")[0][0]
 
 class ValidateError(Exception):
     pass
@@ -94,7 +98,7 @@ def generate_day_menu(calories, protein, carbs, fat):
         daily_result_string += f"\n {n}"
     return  daily_result_string
 
-def generate_days_menu(days, calories, protein, carbs, fat):
+def generate_days_menu(calories, protein, carbs, fat, days):
     """
     Validate data and if validator returns True generate menu
                   else: return validate_error
@@ -109,11 +113,28 @@ def generate_days_menu(days, calories, protein, carbs, fat):
     Returns:
         string: menu or ValidateError
     """
+    global number_of_meals_at_base
     result_string = ""
     for i in range(1, days + 1):
         result_string += f"Day {i} {generate_day_menu(calories, protein, carbs, fat)}" 
     return result_string
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Creating a menu")
+    parser.add_argument('calories', metavar='calories', type=int, help="Your daily calories requirements")
+    parser.add_argument('protein', metavar='protein', type=int, help="Your daily protein requirements")
+    parser.add_argument('carbs', metavar='carbs', type=int, help="Your daily carbs requirements")
+    parser.add_argument('fat', metavar='fat', type=int, help="Your daily fat requirements")
+    parser.add_argument('days', metavar='days', type=int, help="How many days it should be created")
+    return parser.parse_args()
+
+def main():
+    args = parse_args()
+    result = generate_days_menu(args.calories, args.protein, args.carbs, args.fat, args.days)
+    print(result)
+    
+        
+        
 if __name__ == "__main__":
     """
         3999
@@ -122,5 +143,6 @@ if __name__ == "__main__":
     Białka 166 g
     Tłuszcze 111 g
     """
-    print(generate_day_menu(3999, 166, 584, 111))
+    main()
+    # print(generate_day_menu(3999, 166, 584, 111))
     # print(generate_days_menu(3, 2000, 70, 250, 80))
