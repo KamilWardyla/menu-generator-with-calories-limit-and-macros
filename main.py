@@ -4,7 +4,7 @@ from pulp import *
 
 from db_utils import execute_sql
 
-number_of_meals_at_base = execute_sql("SELECT COUNT(*) FROM recipies")[0][0]
+
 
 class ValidateError(Exception):
     pass
@@ -33,7 +33,7 @@ def validate_calories_and_macronutrients(calories, protein_grams, carbs_grams, f
         return False
         
         
-def generate_day_menu(calories, protein, carbs, fat):
+def generate_day_menu(calories, protein, carbs, fat, index_range = [0, 2100]):
     """
     Validate data and if validator returns True generate daily menu
                   else: return validate_error
@@ -52,9 +52,8 @@ def generate_day_menu(calories, protein, carbs, fat):
         raise ValidateError("Somethings wrong with you macronutrients...count your macronutrients one more time")
    
     meals_dict = {}
-    for x in execute_sql('SELECT * from recipies LIMIT 2100'):
+    for x in execute_sql(f'SELECT * from recipies WHERE id > {index_range[0]} and id < {index_range[1]}'):
         meals_dict[x[1]] = {'calories': x[2], 'protein': x[3], 'carbs': x[5], 'fat': x[4]}
-    
     menu = {}
     daily_meals_list = []
     daily_calories = 0
@@ -67,21 +66,23 @@ def generate_day_menu(calories, protein, carbs, fat):
     prob = LpProblem('Meal', LpMinimize)
     
     #Create a dictionary named meals, which will contain the referenced variables
-    meals = LpVariable.dicts('Meal', meals_dict, lowBound=0, cat=LpBinary)
-    
+    meals = LpVariable.dicts('Meal',[(meal, i) for meal,i in enumerate(meals_dict)], lowBound=0, cat=LpInteger)
+    #meals = LpVariable.dicts('Meal', meals_dict, lowBound=0, cat=LpInteger)
+    print(meals)
     #The objective funtion
     prob += lpSum([meals_dict[meal] for meal in meals_dict])
     
     #Constrains
-    prob += lpSum([meals_dict[meal]['calories'] * meals[meal] for meal in meals_dict]) == calories
-    prob += lpSum([meals_dict[meal]['protein'] * meals[meal] for meal in meals_dict]) >= protein
-    prob += lpSum([meals_dict[meal]['fat'] * meals[meal] for meal in meals_dict]) == fat
-    prob += lpSum([meals_dict[meal]['carbs'] * meals[meal] for meal in meals_dict]) == carbs
+    prob += lpSum([meals_dict[meal]['calories'] * meals[(i, meal)] for i, meal in enumerate(meals_dict)]) == calories
+    prob += lpSum([meals_dict[meal]['protein'] * meals[(i, meal)] for i, meal in enumerate(meals_dict)]) >= protein
+    prob += lpSum([meals_dict[meal]['fat'] * meals[(i, meal)] for i, meal in enumerate(meals_dict)]) == fat
+    prob += lpSum([meals_dict[meal]['carbs'] * meals[(i, meal)] for i, meal in enumerate(meals_dict)]) == carbs
+    
     
     prob.solve()
     
-    for meal in meals_dict:
-        if meals[meal].varValue == 1:
+    for i, meal in enumerate(meals_dict):
+        if meals[(i, meal)].varValue == 1:
             menu[meal] = meals_dict[meal]
     
     for key, value in menu.items():
@@ -98,6 +99,7 @@ def generate_day_menu(calories, protein, carbs, fat):
         daily_result_string += f"\n {n}"
     return  daily_result_string
 
+
 def generate_days_menu(calories, protein, carbs, fat, days):
     """
     Validate data and if validator returns True generate menu
@@ -113,10 +115,16 @@ def generate_days_menu(calories, protein, carbs, fat, days):
     Returns:
         string: menu or ValidateError
     """
-    global number_of_meals_at_base
+    number_of_meals_at_base = execute_sql("SELECT COUNT(*) FROM recipies")[0][0]
+    step = number_of_meals_at_base // days
+    range_list = []
+    for i in range(days):
+        if len(range_list) == 0:
+            range_list.append([0, step])
+        range_list.append([range_list[-1][1], range_list[-1][1]+step])
     result_string = ""
     for i in range(1, days + 1):
-        result_string += f"Day {i} {generate_day_menu(calories, protein, carbs, fat)}" 
+        result_string += f"Day {i} {generate_day_menu(calories, protein, carbs, fat, range_list[i-1])}" 
     return result_string
 
 def parse_args():
@@ -143,6 +151,6 @@ if __name__ == "__main__":
     Białka 166 g
     Tłuszcze 111 g
     """
-    main()
+    # main()
     # print(generate_day_menu(3999, 166, 584, 111))
-    # print(generate_days_menu(3, 2000, 70, 250, 80))
+    print(generate_days_menu(3999, 166, 584, 111, 3))
