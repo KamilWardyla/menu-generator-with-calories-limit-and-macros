@@ -6,7 +6,7 @@ from db_utils import execute_sql
 
 
 
-class ValidateError(Exception):
+class InvalidCaloriesAndMacrosError(Exception):
     pass
 
 
@@ -46,10 +46,13 @@ def generate_day_menu(calories, protein, carbs, fat, index_range = [0, 2100]):
 
     Returns:
         string: daily menu or validate_error
+    
+    Raises:
+        InvalidCaloriesAndMacrosError: If function validate_calories_and_macronutrients not return True
     """
     
     if validate_calories_and_macronutrients(calories, protein, carbs, fat) != True:
-        raise ValidateError("Somethings wrong with you macronutrients...count your macronutrients one more time")
+        raise InvalidCaloriesAndMacrosError("Somethings wrong with you macronutrients...count your macronutrients one more time")
    
     meals_dict = {}
     for x in execute_sql(f'SELECT * from recipies WHERE id > {index_range[0]} and id < {index_range[1]}'):
@@ -67,8 +70,7 @@ def generate_day_menu(calories, protein, carbs, fat, index_range = [0, 2100]):
     
     #Create a dictionary named meals, which will contain the referenced variables
     meals = LpVariable.dicts('Meal',[(meal, i) for meal,i in enumerate(meals_dict)], lowBound=0, cat=LpInteger)
-    #meals = LpVariable.dicts('Meal', meals_dict, lowBound=0, cat=LpInteger)
-    print(meals)
+
     #The objective funtion
     prob += lpSum([meals_dict[meal] for meal in meals_dict])
     
@@ -128,6 +130,16 @@ def generate_days_menu(calories, protein, carbs, fat, days):
     return result_string
 
 def parse_args():
+    """
+    Parse command-line arguments for creating a menu.
+
+    Returns:
+        Parsed command-line arguments
+        
+    Raises:
+        ArgumentError: if command-line arguments are not provided correctly.
+    
+    """
     parser = argparse.ArgumentParser(description="Creating a menu")
     parser.add_argument('calories', metavar='calories', type=int, help="Your daily calories requirements")
     parser.add_argument('protein', metavar='protein', type=int, help="Your daily protein requirements")
@@ -144,13 +156,6 @@ def main():
         
         
 if __name__ == "__main__":
-    """
-        3999
-    kcal / day
-    Węglowodany 584 g
-    Białka 166 g
-    Tłuszcze 111 g
-    """
-    # main()
+    main()
     # print(generate_day_menu(3999, 166, 584, 111))
-    print(generate_days_menu(3999, 166, 584, 111, 3))
+    # print(generate_days_menu(3999, 166, 584, 111, 5))

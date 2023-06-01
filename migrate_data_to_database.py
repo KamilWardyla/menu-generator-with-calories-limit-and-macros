@@ -5,7 +5,7 @@ from db_utils import execute_sql
 data = pd.read_csv("epi_r.csv", usecols=[
                    'title', 'calories', 'protein', 'fat'])
 df = pd.DataFrame(data)
-filtered_df = df.loc[(df['calories'].isin(range(385, 1501)) & (df['protein']> 0) & (df['fat']> 0))]
+filtered_df = df.loc[(df['calories'].isin(range(380, 1501)) & (df['protein']> 0) & (df['fat']> 0))]
 
 
 #Count carbs and add to new column
