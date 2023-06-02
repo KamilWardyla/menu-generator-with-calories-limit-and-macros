@@ -39,9 +39,9 @@ def generate_one_day_menu(calories, protein, carbs, fat, index_range=[0, 2100]):
  
     Parameters:
         calories (int): The total calorie count.
-        protein_grams (float): The amount of protein in grams.
-        carbs_grams (float): The amount of carbohydrates in grams.
-        fat_grams (float): The amount of fat in grams.
+        protein (float): The amount of protein in grams.
+        carbs(float): The amount of carbohydrates in grams.
+        fat (float): The amount of fat in grams.
  
     Returns:
         string: daily menu or validate_error
