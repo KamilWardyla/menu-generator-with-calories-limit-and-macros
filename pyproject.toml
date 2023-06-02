@@ -1,4 +1,6 @@
 [tool.pdm]
+# PEP 621 project metadata
+# See https://www.python.org/dev/peps/pep-0621/
 
 [build-system]
 requires = ["pdm-backend"]
@@ -9,17 +11,16 @@ name="menu-generator-with-calories-limit-and-macros"
 version = "0.1.0"
 readme = "README.md
 requires-python = ">=3.8"
-descriptionn = ""
+descriptionn = "A menu generator with calories limit"
 
-[tool.pdm.dependencies]
-numpy = "1.24.3"
-pandas = "2.0.1"
-psycopg2-binary = "2.9.6"
-PuLP = "2.7.0"
-python-dateutil = "2.8.2"
-python-dotenv = "1.0.0"
-pytz = "2023.3"
-six = "1.16.0"
-tzdata = "2023.3"
-
-[tool.pdm.build]
+dependencies = [
+    numpy = "1.24.3"
+    pandas = "2.0.1"
+    psycopg2-binary = "2.9.6"
+    PuLP = "2.7.0"
+    python-dateutil = "2.8.2"
+    python-dotenv = "1.0.0"
+    pytz = "2023.3"
+    six = "1.16.0"
+    tzdata = "2023.3"
+]

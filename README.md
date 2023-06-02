@@ -10,12 +10,19 @@ To run this application, you will need to:
     ```
 2. Execute the command:
     ```
-    pdm install
+    pip install .
     ```
-3. Download recipies from:
+3. Configure your own dontenv file with:
+    ```
+    DB_USER = your_username
+    HOST = your_host
+    PASSWORD = your_password
+    DB = your_dbname
+    ```
+4. Download recipies from:
 https://www.kaggle.com/datasets/hugodarwood/epirecipes?resource=download
-4. Create your database in PostgreSQL
-5. Run the first setup script to migrate data to the database:
+5. Create your database in PostgreSQL
+6. Run the first setup script to migrate data to the database:
     ```
     python migrate_data_to_database.py
     ```
