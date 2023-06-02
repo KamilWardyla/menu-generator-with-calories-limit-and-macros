@@ -12,16 +12,17 @@ To run this application, you will need to:
     ```
     pip install .
     ```
-3. Configure your own dontenv file with:
+3. Create your database in PostgreSQL
+4. Configure your own dontenv file with:
     ```
     DB_USER = your_username
     HOST = your_host
     PASSWORD = your_password
     DB = your_dbname
     ```
-4. Download recipies from:
+5. Download recipies from:
 https://www.kaggle.com/datasets/hugodarwood/epirecipes?resource=download
-5. Create your database in PostgreSQL
+
 6. Run the first setup script to migrate data to the database:
     ```
     python migrate_data_to_database.py
