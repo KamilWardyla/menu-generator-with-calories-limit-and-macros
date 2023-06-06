@@ -19,6 +19,7 @@ To run this application, you will need to:
     HOST = your_host
     PASSWORD = your_password
     DB = your_dbname
+   PORT = your_port
     ```
 5. Download recipies from:
 https://www.kaggle.com/datasets/hugodarwood/epirecipes?resource=download

@@ -9,7 +9,7 @@ build-backend = "pdm.backend"
 [project]
 name="menu-generator-with-calories-limit-and-macros"
 version = "0.1.0"
-readme = "README.md
+readme = "README.md"
 requires-python = ">=3.8"
 descriptionn = "A menu generator with calories limit"
 

@@ -3,14 +3,12 @@ import pandas as pd
 from db_utils import execute_sql
 
 data = pd.read_csv("epi_r.csv", usecols=[
-                   'title', 'calories', 'protein', 'fat'])
+    'title', 'calories', 'protein', 'fat'])
 df = pd.DataFrame(data)
-filtered_df = df.loc[(df['calories'].isin(range(380, 1501)) & (df['protein']> 0) & (df['fat']> 0))]
+filtered_df = df.loc[(df['calories'].isin(range(360, 1600)) & (df['protein'] > 0) & (df['fat'] > 0))]
 
-
-#Count carbs and add to new column
-df2 = filtered_df.assign(carbs=lambda x: (
-    x.calories - x.protein * 4 - x.fat * 9) / 4)
+# Count carbs and add to new column
+df2 = filtered_df.assign(carbs=lambda x: (x.calories - x.protein * 4 - x.fat * 9) / 4)
 
 if __name__ == "__main__":
     execute_sql('''

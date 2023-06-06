@@ -50,7 +50,7 @@ def generate_one_day_menu(calories, protein, carbs, fat, index_range=[0, 2100]):
         InvalidCaloriesAndMacrosError: If function validate_calories_and_macronutrients not return True
     """
 
-    if validate_calories_and_macronutrients(calories, protein, carbs, fat) is not True:
+    if not validate_calories_and_macronutrients(calories, protein, carbs, fat):
         raise InvalidCaloriesAndMacrosError(
             "Somethings wrong with you macronutrients...count your macronutrients one more time")
 
@@ -132,15 +132,6 @@ def generate_menus_for_a_few_days(calories, protein, carbs, fat, days):
 
 
 def parse_args():
-    """
-    Parse command-line arguments for creating a menu.
- 
-    Returns:
-        Parsed command-line arguments
- 
-    Raises:
-        ArgumentError: if command-line arguments are not provided correctly.
-    """
     parser = argparse.ArgumentParser(description="Creating a menu")
     parser.add_argument('calories', metavar='calories', type=int, help="Your daily calories requirements")
     parser.add_argument('protein', metavar='protein', type=int, help="Your daily protein requirements")

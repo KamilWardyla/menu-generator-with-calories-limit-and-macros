@@ -8,6 +8,8 @@ user = os.environ["DB_USER"]
 host = os.environ["HOST"]
 password = os.environ["PASSWORD"]
 db = os.environ["DB"]
+port = os.environ["PORT"]
+
 
 def execute_sql(sql_code, *args):
     """
@@ -24,11 +26,14 @@ def execute_sql(sql_code, *args):
             ProgrammingError: If an error occurs during the execution of the SQL code.
 
     """
-    with connect(host=host, user=user, password=password, database=db) as conn:
+    with connect(host=host, user=user, password=password, database=db, port=port) as conn:
         with conn.cursor() as cur:
             cur.execute(sql_code, args)
             try:
-                results = cur.fetchall()
-                return results
-            except ProgrammingError as e:
-                return f"Error {e}"
+                if cur.description is not None:
+                    results = cur.fetchall()
+                    return results
+                else:
+                    conn.commit()
+            except ProgrammingError:
+                raise ProgrammingError
