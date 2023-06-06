@@ -1,14 +1,14 @@
 import pandas as pd
-import math
-from main import execute_sql
 
-data = pd.read_csv("epi_r.csv", usecols=['title', 'calories', 'protein', 'fat'])
+from db_utils import execute_sql
+
+data = pd.read_csv("epi_r.csv", usecols=[
+    'title', 'calories', 'protein', 'fat'])
 df = pd.DataFrame(data)
+filtered_df = df.loc[(df['calories'].isin(range(360, 1600)) & (df['protein'] > 0) & (df['fat'] > 0))]
 
-"""
-COUNT CARBS AND ADD TO NEW COLUMN
-"""
-df2 = df.assign(carbs=lambda x: (x.calories - x.protein * 4 - x.fat * 9) / 4)
+# Count carbs and add to new column
+df2 = filtered_df.assign(carbs=lambda x: (x.calories - x.protein * 4 - x.fat * 9) / 4)
 
 if __name__ == "__main__":
     execute_sql('''
@@ -23,12 +23,7 @@ if __name__ == "__main__":
         ''')
 
     for row in df2.itertuples():
-        if math.isnan(row.calories) or math.isnan(row.protein) or math.isnan(row.fat) or math.isnan(row.carbs):
-            continue
-        elif row.calories in range(0, 400) or row.calories > 1500:
-            continue
-        else:
-            execute_sql('''
+        execute_sql('''
                 INSERT INTO recipies(title, calories, protein, fat, carbs)
                     VALUES(%s, %s, %s, %s, %s) on conflict (title) do nothing;
                 ''', row.title, row.calories, row.protein, row.fat, row.carbs)
